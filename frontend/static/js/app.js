@@ -156,7 +156,7 @@ function renderOverview() {
     <section class="lower-grid"><div class="panel"><div class="panel-head"><div><h2>Maintenance alerts</h2><p>Machines requiring attention</p></div><a class="btn-quiet" href="#maintenance-alerts">Open alerts</a></div>${alertRows}</div>
     <div class="panel"><div class="panel-head"><div><h2>Fleet health</h2><p>Current condition distribution</p></div></div><div class="chart-box"><canvas id="fleetChart"></canvas></div><div class="legend"><span><i class="healthy"></i>Healthy</span><span><i class="warning"></i>Warning</span><span><i class="critical"></i>Critical</span></div></div></section>`;
   drawFleetChart();
-  refreshAssignedWorkOrders();
+  if (userRole === 'operator') refreshAssignedWorkOrders();
 }
 function renderFleet() {
   pageContent.innerHTML = `${pageHeader('Machine fleet', `${machines.length} assets monitored across your production lines.`, `<input class="search-input" id="fleetSearch" placeholder="Search machines…" aria-label="Search machines"><select class="filter-select" id="fleetRisk"><option value="">All conditions</option><option>Healthy</option><option>Warning</option><option>Critical</option></select>`)}
@@ -478,9 +478,22 @@ function showAlertNotification(alerts) {
   link.href = '#maintenance-alerts';
   link.textContent = 'Review alerts';
   notification.appendChild(link);
+  addNotificationDismissButton(notification);
   notification.hidden = false;
   clearTimeout(notification.dismissTimer);
   notification.dismissTimer = setTimeout(() => { notification.hidden = true; }, 12000);
+}
+function addNotificationDismissButton(notification, onDismiss = () => {}) {
+  const dismissButton = document.createElement('button');
+  dismissButton.type = 'button';
+  dismissButton.className = 'notification-dismiss';
+  dismissButton.setAttribute('aria-label', 'Dismiss notification');
+  dismissButton.textContent = '×';
+  dismissButton.addEventListener('click', () => {
+    onDismiss();
+    notification.hidden = true;
+  });
+  notification.appendChild(dismissButton);
 }
 async function refreshMaintenanceNotifications() {
   try {
@@ -488,7 +501,18 @@ async function refreshMaintenanceNotifications() {
     const dueSchedules = data.schedules.filter(schedule => schedule.is_due);
     let notification = document.getElementById('maintenanceNotification');
     if (!dueSchedules.length) {
-      if (notification) notification.hidden = true;
+      if (notification) {
+        notification.hidden = true;
+        notification.dataset.dismissedSignature = '';
+      }
+      return;
+    }
+    const signature = dueSchedules
+      .map(schedule => `${schedule.machine_id}:${schedule.due_status}`)
+      .sort()
+      .join('|');
+    if (notification?.dataset.dismissedSignature === signature) {
+      notification.hidden = true;
       return;
     }
     if (!notification) {
@@ -509,6 +533,9 @@ async function refreshMaintenanceNotifications() {
     link.href = '#maintenance-schedule';
     link.textContent = data.can_manage ? 'Review / complete' : 'View schedule';
     notification.appendChild(link);
+    addNotificationDismissButton(notification, () => {
+      notification.dataset.dismissedSignature = signature;
+    });
     notification.hidden = false;
   } catch (error) {
     console.warn('Could not refresh the maintenance schedule notification.', error);
@@ -516,7 +543,7 @@ async function refreshMaintenanceNotifications() {
 }
 async function refreshAssignedWorkOrders() {
   const container = document.getElementById('assignedWorkOrders');
-  if (!container) return;
+  if (!container || userRole !== 'operator') return;
   try {
     const data = await getJSON('/api/my-work-orders');
     if (!container.isConnected || pageKey() !== 'overview') return;
@@ -858,6 +885,6 @@ setInterval(updateClock, 1000);
 setInterval(refreshAlertCount, 30000);
 setInterval(refreshMaintenanceNotifications, 60000);
 setInterval(() => {
-  if (pageKey() === 'overview') refreshAssignedWorkOrders();
+  if (userRole === 'operator' && pageKey() === 'overview') refreshAssignedWorkOrders();
 }, 60000);
 loadDashboard();

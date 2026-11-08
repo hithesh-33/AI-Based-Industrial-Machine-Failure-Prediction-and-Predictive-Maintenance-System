@@ -30,7 +30,7 @@ MACHINES = [
     {"id": "MCH-001", "name": "CNC Milling Unit", "line": "Production Line A", "base": [69, 3.2, 1480, 6.1, 72], "last": "2026-10-29", "next": "2026-11-07", "hours": 1260},
     {"id": "MCH-002", "name": "Hydraulic Press", "line": "Production Line A", "base": [82, 5.8, 1210, 8.4, 88], "last": "2026-10-21", "next": "2026-11-06", "hours": 2140},
     {"id": "MCH-003", "name": "Conveyor Motor", "line": "Production Line B", "base": [61, 2.4, 1760, 5.5, 54], "last": "2026-10-31", "next": "2026-11-10", "hours": 740},
-    {"id": "MCH-004", "name": "Industrial Compressor", "line": "Production Line B", "base": [91, 7.1, 990, 9.2, 93], "last": "2026-10-15", "next": "2026-11-05", "hours": 2980},
+    {"id": "MCH-004", "name": "Industrial Compressor", "line": "Production Line B", "base": [96, 6.2, 960, 12, 120], "last": "2026-10-15", "next": "2026-11-05", "hours": 2980},
     {"id": "MCH-005", "name": "Packaging Robot", "line": "Production Line C", "base": [73, 4.0, 1540, 6.7, 67], "last": "2026-10-25", "next": "2026-11-12", "hours": 1080},
     {"id": "MCH-006", "name": "Cooling Pump", "line": "Production Line C", "base": [65, 2.8, 1680, 5.9, 59], "last": "2026-10-30", "next": "2026-11-13", "hours": 620},
 ]
