@@ -1,0 +1,1 @@
+ai4i_sample.csv is a deterministic, illustrative sample dataset created for this prototype. It is not the official AI4I 2020 dataset. Labels are generated from transparent failure-risk rules with noise to demonstrate training and inference. Replace it with the official AI4I 2020 dataset for research-grade evaluation.

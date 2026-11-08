@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f8fc">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>{{ 'Set up ForgeSight' if mode == 'setup' else 'Sign in · ForgeSight' }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/style.css', v='8') }}" rel="stylesheet">
+</head>
+<body class="auth-page">
+  <main class="auth-layout">
+    <section class="auth-brand-panel">
+      <a class="brand auth-brand" href="/"><span class="brand-mark">F</span><span><b>ForgeSight</b><small>PLANT INTELLIGENCE</small></span></a>
+      <div class="auth-brand-copy"><span class="live-pill"><b></b> INDUSTRIAL OPERATIONS</span><h1>Clarity for every machine.<br><span>Confidence for every shift.</span></h1><p>Monitor plant health, coordinate maintenance, and keep a clear history of every alert and action.</p></div>
+      <div class="auth-brand-footer">SECURE WORKSPACE · CONDITION MONITORING</div>
+    </section>
+    <section class="auth-form-panel">
+      <div class="auth-form-wrap">
+        <div class="auth-mobile-brand"><span class="brand-mark">F</span><b>ForgeSight</b></div>
+        <div class="eyebrow">{{ 'FIRST-TIME SETUP' if mode == 'setup' else 'WELCOME BACK' }}</div>
+        <h2>{{ 'Create your administrator account' if mode == 'setup' else 'Sign in to your workspace' }}</h2>
+        <p class="auth-subtitle">{{ 'Set up the first account to secure and manage your plant workspace.' if mode == 'setup' else 'Enter your account details to continue to ForgeSight.' }}</p>
+        {% if error %}<div class="auth-error" role="alert">{{ error }}</div>{% endif %}
+        <form method="post" class="auth-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          {% if mode == 'setup' %}
+            <label>Full name<input name="name" autocomplete="name" maxlength="80" required autofocus></label>
+          {% endif %}
+          <label>Email address<input name="email" type="email" autocomplete="username" maxlength="254" required {% if mode == 'login' %}autofocus{% endif %}></label>
+          <label>Password<input name="password" type="password" autocomplete="{{ 'new-password' if mode == 'setup' else 'current-password' }}" minlength="{{ 12 if mode == 'setup' else 1 }}" required></label>
+          {% if mode == 'setup' %}<small class="auth-hint">Use at least 12 characters. This password is securely hashed before it is stored.</small>{% endif %}
+          <button class="btn-primary auth-submit" type="submit">{{ 'Create admin account' if mode == 'setup' else 'Sign in' }} <span>→</span></button>
+        </form>
+        <div class="auth-security"><span>⌑</span><p><b>Your plant data stays protected.</b><br>Account passwords are never stored as plain text. Signed-in sessions expire after inactivity.</p></div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
