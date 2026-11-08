@@ -49,6 +49,18 @@ A local Flask + scikit-learn prototype for a manufacturing maintenance dashboard
 
 Keep the terminal open while demonstrating. If you change the dataset, run `python train_model.py` again.
 
+## Deploy on Render
+This repository includes a Render Blueprint in `render.yaml` for a free Python web service. It runs with Gunicorn and uses the app's local SQLite database.
+
+1. Push the latest project changes to GitHub.
+2. In the [Render Dashboard](https://dashboard.render.com), choose **New → Blueprint** and connect this repository and the `main` branch.
+3. Review the Blueprint. It selects Render's free plan, runs `gunicorn backend.app:app --bind 0.0.0.0:$PORT`, generates `FORGESIGHT_SECRET_KEY`, and enables secure session cookies.
+4. Apply the Blueprint. The first build installs `requirements.txt`; the database schema initializes automatically at app startup.
+5. After the deploy becomes live, open the Render URL and create the initial administrator account. Avoid using demo credentials on a public deployment.
+6. (Optional) In the Render service's **Environment** settings, add `GEMINI_API_KEY` as a secret environment variable and redeploy. Never put the key in the repository or frontend.
+
+**Free-tier limitation:** Render free web services have an ephemeral filesystem and can spin down when idle. SQLite accounts, alerts, work orders, sensor history, and maintenance records may be lost after a restart, spin-down, or redeploy. Use this free option for demos only, not for important or production data. Persistent storage requires a paid option; check Render's current plans if you later need data retained.
+
 ## Accounts and access
 - **Administrator:** manage user accounts and roles; manage alerts and work orders.
 - **Maintenance operator:** acknowledge/resolve alerts and create/update work orders.
